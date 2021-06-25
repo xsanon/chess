@@ -12,3 +12,7 @@ A simple command line chess game using Python
 The rules are standard chess rules.
 
 Each turn, you will be prompted with `from: ` and `to: ` which you will enter a board position of a piece (ie. '2d') to where you want to move it (ie. '3d').
+
+### Notes
+Chess board only prints properly on Unix-type terminals due to system-specific colored printing. 
+For Windows, check out Ubuntu on WSL.
