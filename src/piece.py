@@ -16,7 +16,7 @@ def check_knight(color, board, pos):
     pos : tup
         Indices to check if there's is a knight
 
-    Invariante `pos` is a valid position on the board.
+    Precondition `pos` is a valid position on the board.
     """
     piece = board.board[pos[0]][pos[1]]
     if piece != None and piece.color != color and piece.name == 'N':
@@ -41,7 +41,7 @@ def check_diag_castle(color, board, start, to):
     to : tup
         Ending point of the diagonal path
 
-    Invariant: `start` and `to` are valid positions on the board
+    Precondition: `start` and `to` are valid positions on the board
     """
     
     if abs(start[0] - to[0]) != abs(start[1] - to[1]):
@@ -145,6 +145,19 @@ def check_updown_castle(color, board, start, to):
     return True
 
 def check_updown(board, start, to):
+    """
+    Checks if there are no pieces along the vertical or horizontal path
+    from `start` (non-inclusive) to `to` (non-inclusive). 
+
+    board : Board
+        Representation of the current board
+
+    start : tup
+        Start location of diagonal path
+
+    to : tup
+        End location of diagonal path
+    """
     if start[0] == to[0]:
         smaller_y = start[1] if start[1] < to[1] else to[1]
         bigger_y = start[1] if start[1] > to[1] else to[1]
@@ -168,16 +181,40 @@ def check_updown(board, start, to):
 
 
 class Piece():
+    """
+    A class to represent a piece in chess
+    
+    ...
+
+    Attributes:
+    -----------
+    name : str
+        Represents the name of a piece as following - 
+        Pawn -> P
+        Rook -> R
+        Knight -> N
+        Bishop -> B
+        Queen -> Q
+        King -> K
+
+    color : bool
+        True if piece is white
+
+    Methods:
+    --------
+    is_valid_move(board, start, to) -> bool
+        Returns True if moving the piece at `start` to `to` is a legal
+        move on board `board`
+        Precondition: [start] and [to] are valid coordinates on the board.board
+    is_white() -> bool
+        Return True if piece is white
+
+    """
     def __init__(self, color):
         self.name = ""
         self.color = color
 
     def is_valid_move(self, board, start, to):
-        """
-        Determines if moving this piece start [start] to [to] is a valid move.
-
-        Precondition: [start] and [to] are valid coordinates on the board.board
-        """
         return False
 
     def is_white(self):
@@ -191,6 +228,10 @@ class Piece():
 
 class Rook(Piece):
     def __init__(self, color, first_move = True):
+        """
+        Same as base class Piece, except `first_move` is used to check
+        if this rook can castle.
+        """
         super().__init__(color)
         self.name = "R"
         self.first_move = first_move 
@@ -240,11 +281,31 @@ class Queen(Piece):
 
 class King(Piece):
     def __init__(self, color, first_move = True):
+        """
+        Same as base class Piece, except `first_move` is used to check
+        if this king can castle.
+        """
         super().__init__(color)
         self.name = "K"
         self.first_move = first_move 
         
     def can_castle(self, board, start, to, right):
+        """
+        Returns True if king at `start` can move to `to` on `board`.
+
+        board : Board
+            Represents the current board
+        start : tup
+            Position of the king
+        to : tup
+            Position of the resulting move
+        right: bool
+            True if castling to the right False otherwise
+
+        Precondition: moving from `start` to `to` is a castling move
+        """
+
+        # White castling to the right
         if self.color and right:
             knight_attack = check_knight(self.color, board, (6, 3)) and \
                 check_knight(self.color, board, (6, 4)) and \
@@ -254,7 +315,6 @@ class King(Piece):
                 check_knight(self.color, board, (5, 7)) and \
                 check_knight(self.color, board, (6, 7))
             if not knight_attack: 
-                print('knight')
                 return False
 
             diags = check_diag_castle(self.color, board, (7, 5), (2, 0)) and \
@@ -262,13 +322,11 @@ class King(Piece):
                 check_diag_castle(self.color, board, (7, 5), (5, 7)) and \
                 check_diag_castle(self.color, board, (7, 6), (6, 7))
             if not diags:
-                print('diag')
                 return False
 
             updowns = check_updown_castle(self.color, board, (7, 5), (0, 5)) and \
                 check_updown_castle(self.color, board, (7, 6), (0, 6))
             if not updowns: 
-                print('updown')
                 return False
 
             board.board[to[0]][to[1]] = King(True, False) 
@@ -277,6 +335,7 @@ class King(Piece):
             board.board[7][7] = None
             return True
         
+        # White castling to the left
         if self.color and not right:
             knight_attack = check_knight(self.color, board, (6, 0)) and \
                 check_knight(self.color, board, (6, 1)) and \
@@ -307,6 +366,7 @@ class King(Piece):
 
             return True
 
+        # Black castling to the right
         if not self.color and right:
             knight_attack = check_knight(self.color, board, (1, 3)) and \
                 check_knight(self.color, board, (1, 4)) and \
@@ -337,6 +397,7 @@ class King(Piece):
 
             return True
         
+        # Black castling to the left
         if not self.color and not right:
             knight_attack = check_knight(self.color, board, (1, 0)) and \
                 check_knight(self.color, board, (1, 1)) and \
@@ -371,8 +432,6 @@ class King(Piece):
 
     def is_valid_move(self, board, start, to):
         if self.first_move and abs(start[1] - to[1]) == 2 and start[0] - to[0] == 0:
-            print("hit")
-            print(self.can_castle(board, start, to, to[1] - start[1] > 0))
             return self.can_castle(board, start, to, to[1] - start[1] > 0)
 
         if abs(start[0] - to[0]) == 1 or start[0] - to[0] == 0:
@@ -400,12 +459,15 @@ class Pawn(Piece):
 
     def is_valid_move(self, board, start, to):
         if self.color:
+            # diagonal move
             if start[0] == to[0] + 1 and (start[1] == to[1] + 1 or start[1] == to[1] - 1):
                 if board.board[to[0]][to[1]] != None:
                     self.first_move = False
                     return True
                 print("Cannot move diagonally unless taking.")
                 return False
+
+            # vertical move
             if start[1] == to[1]:
                 if (start[0] - to[0] == 2 and self.first_move) or (start[0] - to[0] == 1):
                     for i in range(start[0] - 1, to[0] - 1, -1):
@@ -422,6 +484,7 @@ class Pawn(Piece):
                 return False
             print(incorrect_path)
             return False
+
         else:
             if start[0] == to[0] - 1 and (start[1] == to[1] - 1 or start[1] == to[1] + 1):
                 if board.board[to[0]][to[1]] != None:

@@ -107,7 +107,7 @@ class Board():
         to : tup
             Position of where the piece is to be moved
         
-        Invariant: `start` and `to` are valid positions on the board
+        precondition: `start` and `to` are valid positions on the board
         """
 
         if self.board[start[0]][start[1]] == None:
