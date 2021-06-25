@@ -16,3 +16,8 @@ Each turn, you will be prompted with `from: ` and `to: ` which you will enter a 
 ### Notes
 Chess board only prints properly on Unix-type terminals due to system-specific colored printing. 
 For Windows, check out Ubuntu on WSL.
+
+Not currently supported: 
+ * checking that king does not threaten king
+ * checking for mates
+ * checking for checkmates
