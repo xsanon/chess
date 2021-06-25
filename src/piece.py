@@ -1,13 +1,49 @@
 blocked_path = "There's a piece in the path."
 incorrect_path = "This piece does not move in this pattern."
 
+
 def check_knight(color, board, pos):
+    """
+    Check if there is a knight of the opposite `color` at
+    position `pos` on board `board`. 
+
+    color : bool
+        True if white
+
+    board : Board
+        Representation of the current chess board
+
+    pos : tup
+        Indices to check if there's is a knight
+
+    Invariante `pos` is a valid position on the board.
+    """
     piece = board.board[pos[0]][pos[1]]
     if piece != None and piece.color != color and piece.name == 'N':
         return False
     return True
 
+
 def check_diag_castle(color, board, start, to): 
+    """
+    Checks the diagonal path from `start` (non-inclusive) to `to` (inclusive)
+    on board `board` for any threats from the opposite `color`
+
+    color : bool
+        True if white
+
+    board : Board
+        Representation of the current chess board
+
+    start : tup
+        Starting point of the diagonal path
+
+    to : tup
+        Ending point of the diagonal path
+
+    Invariant: `start` and `to` are valid positions on the board
+    """
+    
     if abs(start[0] - to[0]) != abs(start[1] - to[1]):
         print(incorrect_path)
         return False
@@ -17,9 +53,12 @@ def check_diag_castle(color, board, start, to):
 
     i = start[0] + x_pos
     j = start[1] + y_pos
+    
     exists_piece = board.board[i][j] != None
-    if exists_piece and board.board[i][j].name == 'P' and board.board[i][j].color != color:
+    if exists_piece and (board.board[i][j].name == 'P' or board.board[i][j].name == 'K') and \
+        board.board[i][j].color != color:
         return False
+
     while (i <= to[0] if x_pos==1 else i >= to[0]):
         if exists_piece and board.board[i][j].color != color:
             if board.board[i][j].name in ['B', 'Q']: 
@@ -31,10 +70,25 @@ def check_diag_castle(color, board, start, to):
         i += x_pos
         j += y_pos
         exists_piece = board.board[i][j] != None
+
     return True
 
 
 def check_diag(board, start, to):
+    """
+    Checks if there are no pieces along the diagonal path from
+    `start` (non-inclusive) to `to` (non-inclusive). 
+
+    board : Board
+        Representation of the current board
+
+    start : tup
+        Start location of diagonal path
+
+    to : tup
+        End location of diagonal path
+    """
+
     if abs(start[0] - to[0]) != abs(start[1] - to[1]):
         print(incorrect_path)
         return False
@@ -53,9 +107,32 @@ def check_diag(board, start, to):
         j += y_pos
     return True
 
+
 def check_updown_castle(color, board, start, to):
+    """
+    Checks if there are any threats from the opposite `color` from `start` (non-inclusive)
+    to `to` (inclusive) on board `board`.
+
+    color : bool
+        True if white's turn
+    
+    board : Board
+        Representation of the current board
+
+    start : tup
+        Start location of vertical path
+
+    to : tup
+        End location of vertical path
+    """
+    
     x_pos = 1 if to[0] - start[0] > 0 else -1
     i = start[0] + x_pos
+
+    front_piece = board[i][start[1]]
+    if front_piece != None and front_piece.name == 'K' and front_piece.color != color:
+        return False
+
     while (i <= to[0] if x_pos == 1 else i >= to[0]):
         if board.board[i][start[1]] != None and board.board[i][start[1]].color != color:
             if board.board[i][start[1]].name in ['R', 'Q']:

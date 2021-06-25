@@ -2,13 +2,23 @@ import board
 
 class Chess():
     """
-    [TODO: Insert Description]
+    A class to represent the game of chess.
+    
+    ...
+
+    Attributes:
+    -----------
+    board : Board
+        represents the chess board of the game
     """
 
     def __init__(self):
         self.board = board.Board()
 
 def translate(s):
+    """
+    Translates traditional board coordinates of chess into list indices
+    """
     try:
         row = int(s[0])
         col = s[1]
@@ -27,12 +37,16 @@ def translate(s):
 if __name__ == "__main__":
     chess = Chess()
     chess.board.print_board()
+
     while True:
         start = input("From: ")
         to = input("To: ")
+        
         start = translate(start)
         to = translate(to)
+
         if start == None or to == None:
             continue
+
         chess.board.move(start, to)
         chess.board.print_board()
