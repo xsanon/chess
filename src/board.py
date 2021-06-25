@@ -44,7 +44,7 @@ class Board():
         for i in range(len(self.board)):
             tmp_str = "|"
             for j in self.board[i]:
-                if j == None:
+                if j == None or j.name == 'GP':
                     tmp_str += "   |"
                 elif len(j.name) == 2:
                     tmp_str += (" " + str(j) + "|")
@@ -64,7 +64,22 @@ class Board():
         if self.turn != target_piece.color:
             print("That's not your piece to move")
             return
+        end_piece = self.board[to[0]][to[1]]
+        is_end_piece = end_piece != None
+        if is_end_piece and self.board[start[0]][start[1]].color == end_piece.color:
+            print("There's a piece in the path.")
+            return
         if target_piece.is_valid_move(self, start, to):
+            if target_piece.name == 'K' and abs(start[1] - to[1]) == 2:
+                print("castled")
+                
+                if self.turn and self.black_ghost_piece:
+                    self.board[self.black_ghost_piece[0]][self.black_ghost_piece[1]] = None
+                elif not self.turn and self.white_ghost_piece:
+                    self.board[self.white_ghost_piece[0]][self.white_ghost_piece[1]] = None
+                self.turn = not self.turn
+                return
+                
             if self.board[to[0]][to[1]]:
                 print(str(self.board[to[0]][to[1]]) + " taken.")
                 if self.board[to[0]][to[1]].name == "GP":
