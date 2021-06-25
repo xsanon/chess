@@ -1,4 +1,5 @@
 import board
+import piece
 
 class Chess():
     """
@@ -34,6 +35,27 @@ def translate(s):
         print(s + "is not in the format '[number][letter]'")
         return None
 
+
+def promotion(board, pos):
+    pawn = None
+    while pawn == None:
+        promote = input("Promote pawn to [Q, R, N, B, P(or nothing)]: ")
+        if promote not in ['Q', 'R', 'N', 'B', 'P', '']:
+            print("Not a valid promotion piece")
+        else:
+            if promote == 'Q':
+                pawn = piece.Queen(True)
+            elif promote == 'R':
+                pawn = piece.Rook(True)
+            elif promote == 'N':
+                pawn = piece.Knight(True)
+            elif promote == 'B':
+                pawn = piece.Bishop(True)
+            elif promote == 'P' or promote == '': 
+                pawn = piece.Pawn(True)
+    board[pos[0]][pos[1]] = pawn 
+
+
 if __name__ == "__main__":
     chess = Chess()
     chess.board.print_board()
@@ -49,4 +71,18 @@ if __name__ == "__main__":
             continue
 
         chess.board.move(start, to)
+
+        # check for promotion pawns
+        i = 0
+        while i < 8:
+            if not chess.board.turn and chess.board.board[0][i] != None and \
+                chess.board.board[0][i].name == 'P':
+                promotion(chess.board.board, (0, i))
+                break
+            elif chess.board.turn and chess.board.board[7][i] != None and \
+                chess.board.board[7][i].name == 'P':
+                promotion(chess.board.board, (7, i))
+                break
+            i += 1
+
         chess.board.print_board()

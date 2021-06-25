@@ -480,7 +480,7 @@ class Pawn(Piece):
                         board.white_ghost_piece = (start[0] - 1, start[1])
                     self.first_move = False
                     return True
-                print(blocked_path + " or " + "Cannot move forward twice if not first move.")
+                print("Invalid move" + " or " + "Cannot move forward twice if not first move.")
                 return False
             print(incorrect_path)
             return False
@@ -504,7 +504,7 @@ class Pawn(Piece):
                         board.black_ghost_piece = (start[0] + 1, start[1])
                     self.first_move = False
                     return True
-                print(blocked_path + " or " + "Cannot move forward twice if not first move.")
+                print("Invalid move" + " or " + "Cannot move forward twice if not first move.")
                 return False
             print(incorrect_path)
             return False
