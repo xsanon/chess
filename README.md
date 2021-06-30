@@ -6,7 +6,7 @@ A simple command line chess game using Python
 ## Starting the Game
 1. Clone this repository
 2. In the command line, go to the src directory
-3. run `python chess.py`
+3. run `python chess.py` or `python3 chess.py`
 
 ## How to Play
 The rules are standard chess rules.
@@ -19,5 +19,5 @@ For Windows, check out Ubuntu on WSL.
 
 Not currently supported: 
  * checking that king does not threaten king
- * checking for mates
+ * checking for checks
  * checking for checkmates
